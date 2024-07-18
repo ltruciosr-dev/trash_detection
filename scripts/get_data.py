@@ -1,4 +1,5 @@
 import os
+import yaml
 import shutil
 import numpy as np
 import tqdm
@@ -6,7 +7,9 @@ import splitfolders
 
 from pycocotools.coco import COCO
 
+PROJECT_DIR = os.getcwd()
 DATA_DIR = '../TACO/data'
+OUT_DIR = 'data'
 CATEGORY_LABELS = {
     'Bottle': [4, 5, 6],
     'Bottle cap': [7, 8],
@@ -30,6 +33,32 @@ CATEGORY_LABELS = {
     'Scrap metal': [52],
     'Cigarette': [59]
 }
+
+def generate_yaml(data_dir: str):
+    # Define the paths for train and validation images
+    data_path = f'{PROJECT_DIR}/{data_dir}'
+    train_path = f'{data_path}/train/images'
+    val_path = f'{data_path}/val/images'
+
+    # Extract category names
+    category_names = list(CATEGORY_LABELS.keys())
+
+    # Create the dataset dictionary
+    dataset_dict = {
+        'train': train_path,
+        'val': val_path,
+        'nc': len(category_names),
+        'names': category_names
+    }
+
+    # Define the output YAML file path
+    out_path = f'{data_path}/dataset.yaml'
+
+    # Write the dataset dictionary to a YAML file
+    with open(out_path, 'w') as file:
+        yaml.dump(dataset_dict, file, default_flow_style=False)
+
+    print(f'Dataset YAML configuration written to {out_path}')
 
 
 if __name__ == "__main__":
@@ -105,7 +134,8 @@ if __name__ == "__main__":
             os.remove(save_path)
 
     # Split the folders into train and validation
-    splitfolders.ratio('tmp', output="data", seed=1337, ratio=(.8, 0.2))
+    splitfolders.ratio('tmp', output=OUT_DIR, seed=1337, ratio=(.8, 0.2))
+    generate_yaml(data_dir=OUT_DIR)
 
     # Remove the temporal directories
     shutil.rmtree('tmp')
