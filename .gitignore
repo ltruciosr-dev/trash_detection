@@ -1,0 +1,8 @@
+# Data files
+**/data
+**/data_v1
+**/data_v2
+**/data_v3
+
+# Weights
+**/weights
