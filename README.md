@@ -63,7 +63,64 @@ In order to do that we have developed a script that will do two things:
 python scripts/get_data.py
 ```
 
-## Fine Tune a YOLOv10 model
+Make sure that a `data` directory is created and inside we have 2 directories, `train` and `val`, and 1 file, the `dataset.yaml` file.
+
+## Fine-tune a YOLOv10 model
 
 YOLO is a model developed by the chinesse [Tsinghua University](https://www.tsinghua.edu.cn/en/), the latest development - YOLOv10, is the fastest and more accurated model for object detection and segmentation.
 
+1. Download the YOLOv10 weights
+
+Here select which weights to download.
+
+```bash
+python scripts/get_data.py
+```
+
+2. Tune the selected model
+
+```bash
+python train.py --epochs 5 --batch 16 --model weights/yolov10s.pt --data data/dataset.yaml
+```
+
+## Validate the tuned model
+
+1. Check the training runs
+
+All the models area store on the `runs_dir` directory settled when installing YOLO, to check the directory check on:
+
+```bash
+python -c "import ultralytics; from pprint import pprint; pprint(ultralytics.settings)"
+```
+
+The output will be:
+
+```yaml
+{
+  'api_key': '',
+  'clearml': True,
+  'comet': True,
+  'datasets_dir': '/home/ltruciosr/git/datasets',
+  'dvc': True,
+  'hub': True,
+  'mlflow': True,
+  'neptune': True,
+  'openai_api_key': '',
+  'raytune': True,
+  'runs_dir': '/home/ltruciosr/git/yolov10/runs',
+  'settings_version': '0.0.4',
+  'sync': True,
+  'tensorboard': True,
+  'uuid': '5e42f2651d8fe9fce5d35c16ff21f88830a7b94c0efc01e29e3ad3162582d562',
+  'wandb': True,
+  'weights_dir': '/home/ltruciosr/git/yolov10/weights'
+}
+```
+
+2. Perform evaluations
+
+The next script will iterate over all the runs and perform validations for each model.
+
+```bash
+python scripts/valid.py
+```
